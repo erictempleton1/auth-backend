@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.base import TemplateView
-
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
+from auth_demo.models import Challenge
+from django.urls import reverse
+
 
 @login_required
 def profile(request):
@@ -17,3 +21,17 @@ def register(request):
             login(request, user)
             return redirect('profile')
     return render(request, 'registration/register.html', {'form': UserCreationForm})
+
+
+class ChallengesList(ListView):
+  model = Challenge
+  template_name="challenges_list.html"
+  context_object_name = "challenges"
+
+
+class CreateChallenge(CreateView):
+  model = Challenge
+  fields = ['name', 'created_by']
+
+  def get_success_url(self):
+        return reverse('challenges')
