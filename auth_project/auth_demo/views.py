@@ -1,37 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from django.views.generic.base import TemplateView
-from django.views.generic import ListView
+from django.views import View
 from django.views.generic.edit import CreateView
-from django.contrib.auth.decorators import login_required
-from auth_demo.models import Challenge
-from django.urls import reverse
+from django.contrib.auth.models import User
 
 
-@login_required
-def profile(request):
-  return render(request, 'registration/profile.html')
-
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('profile')
-    return render(request, 'registration/register.html', {'form': UserCreationForm})
-
-
-class ChallengesList(ListView):
-  model = Challenge
-  template_name="challenges_list.html"
-  context_object_name = "challenges"
-
-
-class CreateChallenge(CreateView):
-  model = Challenge
-  fields = ['name', 'created_by']
-
-  def get_success_url(self):
-        return reverse('challenges')
+class RegisterView(CreateView):
+  model = User
+  form_class = UserCreationForm
+  template_name_suffix = '_create_form'
